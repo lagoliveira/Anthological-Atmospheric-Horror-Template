@@ -22,3 +22,6 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Godot script UID metadata (auto-generated)
+*.uid
