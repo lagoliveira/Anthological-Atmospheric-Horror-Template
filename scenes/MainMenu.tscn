@@ -1,0 +1,40 @@
+[gd_scene load_steps=3 format=3 uid="5e6f7a8b9c0d1e2f"]
+
+[ext_resource type="Script" path="res://autoloads/GameManager.gd" uid="6f7a8b9c0d1e2f3a"]
+[ext_resource type="Script" path="res://src/managers/FadeManager.gd" uid="7a8b9c0d1e2f3a4b"]
+
+[node name="MainMenu" type="CanvasLayer"]
+
+[node name="MenuContainer" type="Control" parent="."]
+anchor_preset = 15  # center
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_top = 0.5
+anchor_bottom = 0.5
+size = [300, 200]
+
+[node name="Title" type="Label" parent="MenuContainer"]
+text = "Anthological Horror"
+size = [300, 60]
+align = 1
+valign = 1
+custom_colors/font_color = [1, 1, 1, 1]
+custom_colors/font_outline_color = [0, 0, 0, 1]
+theme_overrides/font_size = 32
+position = [0, -80]
+
+[node name="StartButton" type="Button" parent="MenuContainer"]
+text = "Iniciar Jogo"
+size = [200, 40]
+position = [50, -20]
+button_pressed = false
+
+[node name="QuitButton" type="Button" parent="MenuContainer"]
+text = "Sair"
+size = [200, 40]
+position = [50, 30]
+
+[node name="FadeManager" type="Node" parent="."]
+script = ExtResource(7a8b9c0d1e2f3a4b)
+fade_color = [0, 0, 0, 1]
+fade_duration = 1.0

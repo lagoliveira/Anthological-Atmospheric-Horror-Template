@@ -1,0 +1,53 @@
+[gd_scene load_steps=5 format=3 uid="cb27e3d7f8a4c912b5d6e1f7a8b3c4d0"]
+
+[ext_resource type="Script" path="res://src/components/player/FPController.gd" uid="1a2b3c4d5e6f7a8b"]
+[ext_resource type="Script" path="res://src/components/player/Flashlight.gd" uid="2b3c4d5e6f7a8b9c"]
+[ext_resource type="Script" path="res://src/components/player/SanityComponent.gd" uid="3c4d5e6f7a8b9c0d"]
+[ext_resource type="Script" path="res://src/components/base/Component.gd" uid="4d5e6f7a8b9c0d1e"]
+
+[node name="Player" type="CharacterBody3D"]
+script = ExtResource(1a2b3c4d5e6f7a8b)
+mouse_sensitivity = 0.002
+walk_speed = 4.5
+run_speed = 7.0
+jump_velocity = 5.0
+
+[node name="CameraPivot" type="Node3D" parent="."]
+position = [0, 1.6, 0]
+rotation = [0, 0, 0]
+
+[node name="Camera" type="Camera3D" parent="CameraPivot"]
+position = [0, 0, 0]
+rotation = [0, 0, 0]
+fov = 75.0
+near = 0.1
+far = 1000.0
+make_current = true
+
+[node name="Flashlight" type="SpotLight3D" parent="CameraPivot"]
+position = [0, 0.05, 0]
+rotation = [0, 0, 0]
+enabled = false
+color = [1, 0.96, 0.9]
+energy = 2.5
+specular = 1.0
+range = 14.0
+cone_angle = 45.0
+shadows_enabled = true
+shadow = 1
+
+[node name="FlashlightComponent" type="Node" parent="."]
+script = ExtResource(2b3c4d5e6f7a8b9c)
+light_node = NodePath("CameraPivot/Flashlight")
+battery_capacity = 100.0
+battery_drain_rate = 15.0
+battery_recharge_rate = 8.0
+low_battery_threshold = 20.0
+
+[node name="SanityComponent" type="Node" parent="."]
+script = ExtResource(3c4d5e6f7a8b9c0d)
+max_sanity = 100.0
+drain_rate_dark = 5.0
+drain_rate_monster = 20.0
+gain_rate_safe = 3.0
+low_sanity_threshold = 30.0
