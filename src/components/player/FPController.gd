@@ -12,7 +12,7 @@ class_name FPController
 @export var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 @export var sprint_key: String = "Shift"
 
-var velocity: Vector3 = Vector3.ZERO
+var move_velocity: Vector3 = Vector3.ZERO
 var camera_pivot: Node3D
 var camera: Camera3D
 var yaw: float = 0.0
@@ -61,17 +61,18 @@ func _physics_process(delta: float) -> void:
 		target_speed = run_speed
 
 	if is_on_floor:
-		velocity = direction * target_speed
+		move_velocity = direction * target_speed
 		# Footstep timer could go here
 		if direction.length() > 0.1 and Input.is_action_just_pressed("move_forward"):
 			footstep_played.emit()
 	else:
-		velocity.y -= gravity * delta
+		move_velocity.y -= gravity * delta
 
 	if Input.is_action_just_pressed("jump") and is_on_floor:
-		velocity.y = jump_velocity
+		move_velocity.y = jump_velocity
 		player_jumped.emit()
 
+	velocity = move_velocity
 	move_and_slide()
 
 	if is_sprinting and direction.length() > 0.1:

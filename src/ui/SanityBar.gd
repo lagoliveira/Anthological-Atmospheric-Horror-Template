@@ -13,7 +13,7 @@ func _ready() -> void:
 		return
 	var sanity_component: SanityComponent = get_node_or_null("%SanityComponent") as SanityComponent
 	if sanity_component:
-		set_max_value(sanity_component.max_sanity)
+		max_value = sanity_component.max_sanity
 		set_value(sanity_component.sanity)
 		sanity_component.sanity_changed.connect(_on_sanity_changed)
 

@@ -46,7 +46,8 @@ func _fade_to(target_alpha: float, duration: float) -> void:
 func change_scene_fade(scene_path: String, fade_duration: float = 1.0) -> void:
 	fade_out(fade_duration)
 	var tween: Tween = create_tween()
+	tween.tween_interval(fade_duration)
 	tween.tween_callback(func():
 		get_tree().change_scene_to_file(scene_path)
 		fade_in(fade_duration)
-	), fade_duration
+	)

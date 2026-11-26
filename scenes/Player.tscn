@@ -1,9 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="cb27e3d7f8a4c912b5d6e1f7a8b3c4d0"]
+[gd_scene load_steps=4 format=3 uid="cb27e3d7f8a4c912b5d6e1f7a8b3c4d0"]
 
 [ext_resource type="Script" path="res://src/components/player/FPController.gd" uid="1a2b3c4d5e6f7a8b"]
 [ext_resource type="Script" path="res://src/components/player/Flashlight.gd" uid="2b3c4d5e6f7a8b9c"]
 [ext_resource type="Script" path="res://src/components/player/SanityComponent.gd" uid="3c4d5e6f7a8b9c0d"]
-[ext_resource type="Script" path="res://src/components/base/Component.gd" uid="4d5e6f7a8b9c0d1e"]
 
 [node name="Player" type="CharacterBody3D"]
 script = ExtResource(1a2b3c4d5e6f7a8b)
@@ -14,7 +13,6 @@ jump_velocity = 5.0
 
 [node name="CameraPivot" type="Node3D" parent="."]
 position = [0, 1.6, 0]
-rotation = [0, 0, 0]
 
 [node name="Camera" type="Camera3D" parent="CameraPivot"]
 position = [0, 0, 0]
@@ -26,15 +24,12 @@ make_current = true
 
 [node name="Flashlight" type="SpotLight3D" parent="CameraPivot"]
 position = [0, 0.05, 0]
-rotation = [0, 0, 0]
 enabled = false
 color = [1, 0.96, 0.9]
 energy = 2.5
-specular = 1.0
 range = 14.0
 cone_angle = 45.0
 shadows_enabled = true
-shadow = 1
 
 [node name="FlashlightComponent" type="Node" parent="."]
 script = ExtResource(2b3c4d5e6f7a8b9c)

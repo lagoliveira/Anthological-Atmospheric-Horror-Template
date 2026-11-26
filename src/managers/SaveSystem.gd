@@ -18,7 +18,7 @@ func save_game(save_id: String = "", player: Node3D = null, inventory: Inventory
 
 	var save_data: Dictionary = {
 		"player_position": player.global_position if player else Vector3.ZERO,
-		"player_rotation": player.rotation_quaternion if player else Quat.IDENTITY,
+		"player_rotation": player.rotation_quaternion if player else Quaternion.IDENTITY,
 		"sanity": sanity.sanity if sanity else 100.0,
 		"inventory": inventory.get_all_items() if inventory else {},
 		"notes": notes.get_notes_data() if notes else [],
@@ -48,7 +48,7 @@ func load_game(save_id: String = "", player: Node3D = null, inventory: Inventory
 
 	if player:
 		player.global_position = data.get("player_position", Vector3.ZERO)
-		player.rotation_quaternion = data.get("player_rotation", Quat.IDENTITY)
+		player.rotation_quaternion = data.get("player_rotation", Quaternion.IDENTITY)
 	if sanity:
 		sanity.sanity = data.get("sanity", 100.0)
 		sanity.sanity_changed.emit(sanity.sanity, sanity.max_sanity)
@@ -75,4 +75,8 @@ func get_save_list() -> Array:
 
 func delete_save(save_id: String) -> bool:
 	var file_path: String = save_folder + save_id + ".save"
-	return DirAccess.remove_file_absolute(file_path)
+	var d: DirAccess = DirAccess.open(save_folder)
+	if not d:
+		return false
+	var err: Error = d.remove(file_path)
+	return err == Error.OK

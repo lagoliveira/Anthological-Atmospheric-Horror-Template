@@ -10,12 +10,9 @@ signal component_ready()
 signal component_exited_tree()
 
 # Reference to the entity (owner node) this component is attached to.
-@export var entity: Node = null setget _set_entity, _get_entity
+@export var entity: Node = null
 
-func _set_entity(value: Node):
-	entity = value
-
-func _get_entity() -> Node:
+func get_entity() -> Node:
 	return entity if entity else get_owner_or_null()
 
 func _ready() -> void:

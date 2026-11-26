@@ -15,14 +15,14 @@ class_name Door
 
 var is_open: bool = false
 var is_animating: bool = false
-var closed_rotation: Quat
-var open_rotation: Quat
+var closed_rotation: Quaternion
+var open_rotation: Quaternion
 
 func _ready() -> void:
 	interaction_prompt = "Abrir porta"
 	if door_node:
 		closed_rotation = door_node.rotation_quaternion
-		open_rotation = closed_rotation * Quat(Vector3.UP, open_angle)
+		open_rotation = closed_rotation * Quaternion(Vector3.UP, open_angle)
 
 func _interact(interactor: Node) -> void:
 	if is_locked:
@@ -43,7 +43,11 @@ func _interact(interactor: Node) -> void:
 	is_animating = true
 	is_open = !is_open
 
-	var target: Quat = is_open ? open_rotation : closed_rotation
+	var target: Quaternion
+	if is_open:
+		target = open_rotation
+	else:
+		target = closed_rotation
 	var tween: Tween = create_tween()
 	tween.tween_property(door_node, "rotation_quaternion", target, 1.0 / open_speed)
 	tween.tween_callback(func(): is_animating = false)
