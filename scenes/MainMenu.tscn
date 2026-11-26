@@ -1,6 +1,6 @@
 [gd_scene load_steps=1 format=3 uid="5e6f7a8b9c0d1e2f"]
 
-[ext_resource type="Script" path="res://src/managers/FadeManager.gd" uid="7a8b9c0d1e2f3a4b"]
+[ext_resource type="Script" path="res://src/managers/FadeManager.gd" id="7a8b9c0d1e2f3a4b"]
 
 [node name="MainMenu" type="CanvasLayer"]
 

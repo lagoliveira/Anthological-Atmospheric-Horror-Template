@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=3 uid="cb27e3d7f8a4c912b5d6e1f7a8b3c4d0"]
 
-[ext_resource type="Script" path="res://src/components/player/FPController.gd" uid="1a2b3c4d5e6f7a8b"]
-[ext_resource type="Script" path="res://src/components/player/Flashlight.gd" uid="2b3c4d5e6f7a8b9c"]
-[ext_resource type="Script" path="res://src/components/player/SanityComponent.gd" uid="3c4d5e6f7a8b9c0d"]
+[ext_resource type="Script" path="res://src/components/player/FPController.gd" id="1a2b3c4d5e6f7a8b"]
+[ext_resource type="Script" path="res://src/components/player/Flashlight.gd" id="2b3c4d5e6f7a8b9c"]
+[ext_resource type="Script" path="res://src/components/player/SanityComponent.gd" id="3c4d5e6f7a8b9c0d"]
 
 [node name="Player" type="CharacterBody3D"]
 script = ExtResource(1a2b3c4d5e6f7a8b)

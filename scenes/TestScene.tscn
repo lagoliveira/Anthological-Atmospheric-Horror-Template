@@ -1,11 +1,11 @@
 [gd_scene load_steps=9 format=3 uid="d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6"]
 
-[ext_resource type="PackedScene" path="res://scenes/Player.tscn" uid="1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d"]
-[ext_resource type="Script" path="res://src/components/environment/LightSource.gd" uid="7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d"]
-[ext_resource type="Script" path="res://src/components/environment/AudioEmitter.gd" uid="8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e"]
-[ext_resource type="Script" path="res://src/components/interaction/Door.gd" uid="9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f"]
-[ext_resource type="Script" path="res://src/components/interaction/Note.gd" uid="a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e"]
-[ext_resource type="Script" path="res://src/components/environment/TriggerZone.gd" uid="b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f"]
+[ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d"]
+[ext_resource type="Script" path="res://src/components/environment/LightSource.gd" id="7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d"]
+[ext_resource type="Script" path="res://src/components/environment/AudioEmitter.gd" id="8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e"]
+[ext_resource type="Script" path="res://src/components/interaction/Door.gd" id="9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f"]
+[ext_resource type="Script" path="res://src/components/interaction/Note.gd" id="a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e"]
+[ext_resource type="Script" path="res://src/components/environment/TriggerZone.gd" id="b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f"]
 
 [node name="TestEnvironment" type="Node3D"]
 
