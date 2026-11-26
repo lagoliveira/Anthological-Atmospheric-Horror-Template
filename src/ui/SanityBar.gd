@@ -11,7 +11,7 @@ func _ready() -> void:
 	var game_manager: GameManager = get_node_or_null("/root/GameManager")
 	if not game_manager:
 		return
-	var sanity_component: SanityComponent = get_node_or_null("%SanityComponent") as SanityComponent
+	var sanity_component: SanityComponent = game_manager.get_sanity_component()
 	if sanity_component:
 		max_value = sanity_component.max_sanity
 		set_value(sanity_component.sanity)

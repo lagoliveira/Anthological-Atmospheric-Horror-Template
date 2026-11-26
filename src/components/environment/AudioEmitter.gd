@@ -13,7 +13,8 @@ class_name AudioEmitter
 func _ready() -> void:
 	stream_paused = false
 	autoplay = play_on_start
-	loop = loop
+	if stream and "loop" in stream:
+		stream.loop = loop
 
 	if play_on_start and start_delay > 0:
 		await get_tree().create_timer(start_delay).timeout

@@ -16,7 +16,8 @@ signal fade_finished()
 func _ready() -> void:
 	fade_rect = ColorRect.new()
 	fade_rect.color = fade_color
-	fade_rect.size = get_viewport_rect().size
+	fade_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
+	fade_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	fade_rect.modulate.a = 0.0
 	add_child(fade_rect)
 

@@ -22,17 +22,13 @@ func _interact(interactor: Node) -> void:
 	is_read = true
 	is_interactable = false
 
-	var notes_manager: NotesManager = get_node_or_null("/root/NotesManager")
-	if notes_manager:
-		notes_manager.add_note(note_id, note_title, note_text, note_texture)
-
-	if audio_on_read:
-		var audio_manager: AudioManager = get_node_or_null("/root/AudioManager")
-		if audio_manager:
-			audio_manager.play_sound(audio_on_read)
-
 	var game_manager: GameManager = get_node_or_null("/root/GameManager")
 	if game_manager:
+		game_manager.get_notes_manager().add_note(note_id, note_title, note_text, note_texture)
+
+		if audio_on_read:
+			game_manager.get_audio_manager().play_sound(audio_on_read)
+
 		game_manager.restore_sanity(sanity_gain)
 
 	interacted.emit(interactor)

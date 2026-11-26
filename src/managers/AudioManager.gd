@@ -15,7 +15,18 @@ signal ambient_changed(stream: AudioStream)
 signal sanity_level_changed(level: float)
 
 func _ready() -> void:
-	if ambient_bus:
+	if not music_bus:
+		music_bus = AudioStreamPlayer.new()
+		music_bus.name = "MusicBus"
+		add_child(music_bus)
+	if not sfx_bus:
+		sfx_bus = AudioStreamPlayer.new()
+		sfx_bus.name = "SfxBus"
+		add_child(sfx_bus)
+	if not ambient_bus:
+		ambient_bus = AudioStreamPlayer.new()
+		ambient_bus.name = "AmbientBus"
+		add_child(ambient_bus)
 		ambient_bus.play()
 
 func play_sound(stream: AudioStream, volume: float = 1.0, pitch: float = 1.0) -> void:

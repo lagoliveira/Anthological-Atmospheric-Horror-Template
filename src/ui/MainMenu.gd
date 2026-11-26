@@ -1,0 +1,26 @@
+extends CanvasLayer
+class_name MainMenu
+
+# Main menu for the anthology template.
+# Wires the buttons and uses the FadeManager for scene transitions.
+
+@export var game_scene_path: String = "res://scenes/TestScene.tscn"
+
+@onready var start_button: Button = get_node_or_null("MenuContainer/StartButton")
+@onready var quit_button: Button = get_node_or_null("MenuContainer/QuitButton")
+
+func _ready() -> void:
+	if start_button:
+		start_button.pressed.connect(_on_start_pressed)
+	if quit_button:
+		quit_button.pressed.connect(_on_quit_pressed)
+
+func _on_start_pressed() -> void:
+	var game_manager: GameManager = get_node_or_null("/root/GameManager")
+	if game_manager:
+		game_manager.get_fade_manager().change_scene_fade(game_scene_path, 1.0)
+	else:
+		get_tree().change_scene_to_file(game_scene_path)
+
+func _on_quit_pressed() -> void:
+	get_tree().quit()

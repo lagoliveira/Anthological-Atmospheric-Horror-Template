@@ -1,36 +1,44 @@
-[gd_scene load_steps=1 format=3 uid="5e6f7a8b9c0d1e2f"]
+[gd_scene load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://src/managers/FadeManager.gd" id="7a8b9c0d1e2f3a4b"]
+[ext_resource type="Script" path="res://src/ui/MainMenu.gd" id="1_mm"]
 
 [node name="MainMenu" type="CanvasLayer"]
+script = ExtResource("1_mm")
+game_scene_path = "res://scenes/TestScene.tscn"
+
+[node name="Background" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.02, 0.02, 0.03, 1)
 
 [node name="MenuContainer" type="Control" parent="."]
-anchor_preset = 15
 anchor_left = 0.5
-anchor_right = 0.5
 anchor_top = 0.5
+anchor_right = 0.5
 anchor_bottom = 0.5
-size = [300, 200]
+offset_left = -150.0
+offset_top = -100.0
+offset_right = 150.0
+offset_bottom = 100.0
 
 [node name="Title" type="Label" parent="MenuContainer"]
+offset_right = 300.0
+offset_bottom = 60.0
 text = "Anthological Horror"
-size = [300, 60]
-align = 1
-valign = 1
-theme_overrides/font_size = 32
-position = [0, -80]
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 32
 
 [node name="StartButton" type="Button" parent="MenuContainer"]
+offset_left = 50.0
+offset_top = 80.0
+offset_right = 250.0
+offset_bottom = 120.0
 text = "Iniciar Jogo"
-size = [200, 40]
-position = [50, -20]
 
 [node name="QuitButton" type="Button" parent="MenuContainer"]
+offset_left = 50.0
+offset_top = 130.0
+offset_right = 250.0
+offset_bottom = 170.0
 text = "Sair"
-size = [200, 40]
-position = [50, 30]
-
-[node name="FadeManager" type="Node" parent="."]
-script = ExtResource(7a8b9c0d1e2f3a4b)
-fade_color = [0, 0, 0, 1]
-fade_duration = 1.0

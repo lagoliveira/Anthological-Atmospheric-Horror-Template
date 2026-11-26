@@ -1,9 +1,10 @@
-extends Node3D
+extends Area3D
 class_name Interactable
 
 # Base class for anything the player can interact with.
 # Subclasses override _interact() to define behavior.
-# The FPController or an InteractionManager casts a ray and calls interact().
+# Extends Area3D so the InteractionManager ray query can detect it.
+# Add a CollisionShape3D child to define the interaction volume.
 
 @export var interaction_distance: float = 3.0
 @export var interaction_prompt: String = "Interagir"

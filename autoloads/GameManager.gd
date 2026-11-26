@@ -1,43 +1,58 @@
 extends Node
 class_name GameManager
 
-# Central autoload that holds references to all global managers
-# and provides high-level game state for the anthology template.
+# Central autoload that owns every global manager and exposes
+# high-level game state for the anthology template.
+#
+# The managers are created in code as children of this node so that
+# there is a single autoload entry to configure in Project Settings.
 
-@onready var save_system: SaveSystem = get_node("SaveSystem")
-@onready var audio_manager: AudioManager = get_node("AudioManager")
-@onready var fade_manager: FadeManager = get_node("FadeManager")
-@onready var notes_manager: NotesManager = get_node("NotesManager")
-@onready var inventory_manager: InventoryManager = get_node("InventoryManager")
+var save_system: SaveSystem
+var audio_manager: AudioManager
+var fade_manager: FadeManager
+var notes_manager: NotesManager
+var inventory_manager: InventoryManager
 
 var current_chapter: String = ""
 var is_paused: bool = false
 var player: Node3D
+var sanity_component: SanityComponent
 
 signal chapter_changed(new_chapter: String)
 signal game_paused(is_paused: bool)
 signal sanity_restored(amount: float)
 
 func _ready() -> void:
-	# Ensure managers exist
-	if not save_system:
-		push_error("GameManager: SaveSystem não encontrado!")
-	if not audio_manager:
-		push_error("GameManager: AudioManager não encontrado!")
-	if not fade_manager:
-		push_error("GameManager: FadeManager não encontrado!")
-	if not notes_manager:
-		push_error("GameManager: NotesManager não encontrado!")
-	if not inventory_manager:
-		push_error("GameManager: InventoryManager não encontrado!")
+	save_system = SaveSystem.new()
+	save_system.name = "SaveSystem"
+	add_child(save_system)
+
+	audio_manager = AudioManager.new()
+	audio_manager.name = "AudioManager"
+	add_child(audio_manager)
+
+	fade_manager = FadeManager.new()
+	fade_manager.name = "FadeManager"
+	add_child(fade_manager)
+
+	notes_manager = NotesManager.new()
+	notes_manager.name = "NotesManager"
+	add_child(notes_manager)
+
+	inventory_manager = InventoryManager.new()
+	inventory_manager.name = "InventoryManager"
+	add_child(inventory_manager)
 
 func set_player(new_player: Node3D) -> void:
 	player = new_player
+	var found: SanityComponent = new_player.get_node_or_null("SanityComponent") as SanityComponent
+	if found:
+		sanity_component = found
+
+func get_sanity_component() -> SanityComponent:
+	return sanity_component
 
 func restore_sanity(amount: float) -> void:
-	var sanity_component: SanityComponent = get_node_or_null("%SanityComponent") as SanityComponent
-	if not sanity_component and player:
-		sanity_component = player.get_node_or_null("SanityComponent") as SanityComponent
 	if sanity_component:
 		sanity_component.restore_sanity(amount)
 		sanity_restored.emit(amount)

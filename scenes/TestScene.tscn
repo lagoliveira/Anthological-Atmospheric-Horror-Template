@@ -1,61 +1,132 @@
-[gd_scene load_steps=9 format=3 uid="d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6"]
+[gd_scene load_steps=24 format=3]
 
-[ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d"]
-[ext_resource type="Script" path="res://src/components/environment/LightSource.gd" id="7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d"]
-[ext_resource type="Script" path="res://src/components/environment/AudioEmitter.gd" id="8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e"]
-[ext_resource type="Script" path="res://src/components/interaction/Door.gd" id="9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f"]
-[ext_resource type="Script" path="res://src/components/interaction/Note.gd" id="a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e"]
-[ext_resource type="Script" path="res://src/components/environment/TriggerZone.gd" id="b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f"]
+[ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="1_player"]
+[ext_resource type="Script" path="res://src/components/environment/LightSource.gd" id="2_ls"]
+[ext_resource type="Script" path="res://src/components/environment/AudioEmitter.gd" id="3_ae"]
+[ext_resource type="Script" path="res://src/components/interaction/Door.gd" id="4_door"]
+[ext_resource type="Script" path="res://src/components/interaction/Note.gd" id="5_note"]
+[ext_resource type="Script" path="res://src/components/environment/TriggerZone.gd" id="6_tz"]
+[ext_resource type="Script" path="res://scenes/TestScene.gd" id="7_ts"]
+[ext_resource type="Texture2D" path="res://assets/icons/crosshair.svg" id="8_ch"]
+[ext_resource type="Script" path="res://src/ui/Crosshair.gd" id="9_crosshair"]
+[ext_resource type="Script" path="res://src/ui/SanityBar.gd" id="10_sanitybar"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_floor"]
+size = Vector3(20, 0.5, 20)
+
+[sub_resource type="BoxMesh" id="BoxMesh_wall"]
+size = Vector3(20, 5, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_wall_side"]
+size = Vector3(0.5, 5, 20)
+
+[sub_resource type="BoxMesh" id="BoxMesh_door"]
+size = Vector3(1.2, 2.2, 0.1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_note"]
+size = Vector3(0.2, 0.3, 0.01)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(20, 0.5, 20)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall"]
+size = Vector3(20, 5, 0.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall_side"]
+size = Vector3(0.5, 5, 20)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_door"]
+size = Vector3(1.2, 2.2, 0.1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_note"]
+size = Vector3(0.2, 0.3, 0.01)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_dark"]
+size = Vector3(4, 3, 4)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ground"]
+albedo_color = Color(0.12, 0.11, 0.1, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wood"]
+albedo_color = Color(0.28, 0.18, 0.1, 1)
+roughness = 0.9
 
 [node name="TestEnvironment" type="Node3D"]
+script = ExtResource("7_ts")
 
-[node name="Player" type="Node3D" parent="."]
-instance = ExtResource(1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d)
-position = [0, 1.6, 0]
+[node name="Player" parent="." instance=ExtResource("1_player")]
+position = Vector3(0, 0.05, 4)
 
-[node name="Floor" type="MeshInstance3D" parent="."]
-mesh = BoxMesh.new()
-size = [20, 0.5, 20]
-position = [0, 0.25, 0]
-material = ShaderMaterial.new()
+[node name="FloorBody" type="StaticBody3D" parent="."]
 
-[node name="WallBack" type="MeshInstance3D" parent="."]
-mesh = BoxMesh.new()
-size = [20, 5, 0.5]
-position = [0, 2.5, -10]
-material = ShaderMaterial.new()
+[node name="Floor" type="MeshInstance3D" parent="FloorBody"]
+position = Vector3(0, 0.25, 0)
+material_override = SubResource("StandardMaterial3D_ground")
+mesh = SubResource("BoxMesh_floor")
 
-[node name="WallLeft" type="MeshInstance3D" parent="."]
-mesh = BoxMesh.new()
-size = [0.5, 5, 20]
-position = [-10, 2.5, 0]
-material = ShaderMaterial.new()
+[node name="FloorShape" type="CollisionShape3D" parent="FloorBody"]
+position = Vector3(0, 0.25, 0)
+shape = SubResource("BoxShape3D_floor")
 
-[node name="WallRight" type="MeshInstance3D" parent="."]
-mesh = BoxMesh.new()
-size = [0.5, 5, 20]
-position = [10, 2.5, 0]
-material = ShaderMaterial.new()
+[node name="CeilingBody" type="StaticBody3D" parent="."]
 
-[node name="Ceiling" type="MeshInstance3D" parent="."]
-mesh = BoxMesh.new()
-size = [20, 0.5, 20]
-position = [0, 5.25, 0]
-material = ShaderMaterial.new()
+[node name="Ceiling" type="MeshInstance3D" parent="CeilingBody"]
+position = Vector3(0, 5.25, 0)
+material_override = SubResource("StandardMaterial3D_ground")
+mesh = SubResource("BoxMesh_floor")
+
+[node name="CeilingShape" type="CollisionShape3D" parent="CeilingBody"]
+position = Vector3(0, 5.25, 0)
+shape = SubResource("BoxShape3D_floor")
+
+[node name="WallBackBody" type="StaticBody3D" parent="."]
+
+[node name="WallBack" type="MeshInstance3D" parent="WallBackBody"]
+position = Vector3(0, 2.5, -10)
+material_override = SubResource("StandardMaterial3D_ground")
+mesh = SubResource("BoxMesh_wall")
+
+[node name="WallBackShape" type="CollisionShape3D" parent="WallBackBody"]
+position = Vector3(0, 2.5, -10)
+shape = SubResource("BoxShape3D_wall")
+
+[node name="WallLeftBody" type="StaticBody3D" parent="."]
+
+[node name="WallLeft" type="MeshInstance3D" parent="WallLeftBody"]
+position = Vector3(-10, 2.5, 0)
+material_override = SubResource("StandardMaterial3D_ground")
+mesh = SubResource("BoxMesh_wall_side")
+
+[node name="WallLeftShape" type="CollisionShape3D" parent="WallLeftBody"]
+position = Vector3(-10, 2.5, 0)
+shape = SubResource("BoxShape3D_wall_side")
+
+[node name="WallRightBody" type="StaticBody3D" parent="."]
+
+[node name="WallRight" type="MeshInstance3D" parent="WallRightBody"]
+position = Vector3(10, 2.5, 0)
+material_override = SubResource("StandardMaterial3D_ground")
+mesh = SubResource("BoxMesh_wall_side")
+
+[node name="WallRightShape" type="CollisionShape3D" parent="WallRightBody"]
+position = Vector3(10, 2.5, 0)
+shape = SubResource("BoxShape3D_wall_side")
 
 [node name="AmbientLight" type="DirectionalLight3D" parent="."]
-energy = 0.3
-color = [0.4, 0.4, 0.5]
-rotation = [deg_to_rad(45), deg_to_rad(-45), 0]
+rotation = Vector3(0.785398, -0.785398, 0)
+light_energy = 0.3
+light_color = Color(0.4, 0.4, 0.5, 1)
 
 [node name="LampLight" type="PointLight3D" parent="."]
-position = [-5, 3, -5]
-energy = 2.0
-color = [1, 0.9, 0.8]
-range = 8.0
+position = Vector3(-5, 3, -5)
+light_color = Color(1, 0.9, 0.8, 1)
+light_energy = 2.0
+shadow_enabled = true
+omni_range = 8.0
 
 [node name="LampComponent" type="Node" parent="LampLight"]
-script = ExtResource(7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d)
+script = ExtResource("2_ls")
 light_node = NodePath("..")
 is_on_by_default = true
 can_be_toggled = true
@@ -64,60 +135,114 @@ flicker_intensity = 0.3
 affects_sanity = true
 
 [node name="TestDoor" type="Node3D" parent="."]
-position = [0, 0, -8]
-rotation = [0, 0, 0]
+position = Vector3(0, 0, -8)
 
 [node name="DoorMesh" type="MeshInstance3D" parent="TestDoor"]
-mesh = BoxMesh.new()
-size = [1.2, 2.2, 0.1]
-position = [0, 1.1, 0.05]
-material = ShaderMaterial.new()
+position = Vector3(0, 1.1, 0)
+material_override = SubResource("StandardMaterial3D_wood")
+mesh = SubResource("BoxMesh_door")
 
-[node name="DoorComponent" type="Node" parent="TestDoor"]
-script = ExtResource(9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f)
+[node name="DoorComponent" type="Area3D" parent="TestDoor"]
+script = ExtResource("4_door")
 door_node = NodePath("..")
 interaction_prompt = "Abrir porta"
 open_angle = 1.5708
 open_speed = 3.0
 is_locked = false
 
+[node name="DoorShape" type="CollisionShape3D" parent="TestDoor/DoorComponent"]
+shape = SubResource("BoxShape3D_door")
+
 [node name="TestNote" type="Node3D" parent="."]
-position = [3, 0.3, -4]
+position = Vector3(3, 0.3, -4)
 
 [node name="NoteMesh" type="MeshInstance3D" parent="TestNote"]
-mesh = BoxMesh.new()
-size = [0.2, 0.3, 0.01]
-position = [0, 0, 0]
-material = ShaderMaterial.new()
+material_override = SubResource("StandardMaterial3D_wood")
+mesh = SubResource("BoxMesh_note")
 
-[node name="NoteComponent" type="Node" parent="TestNote"]
-script = ExtResource(a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e)
+[node name="NoteComponent" type="Area3D" parent="TestNote"]
+script = ExtResource("5_note")
 note_id = "intro_note_01"
 note_title = "Bem-vindo"
-note_text = "Este é um template de terror atmosférico antológico. Explore o ambiente e teste os componentes."
+note_text = "Este e um template de terror atmosferico antologico. Explore o ambiente e teste os componentes."
 interaction_prompt = "Ler nota"
 
+[node name="NoteShape" type="CollisionShape3D" parent="TestNote/NoteComponent"]
+shape = SubResource("BoxShape3D_note")
+
 [node name="AmbientSound" type="AudioStreamPlayer3D" parent="."]
-position = [0, 2, 0]
+position = Vector3(0, 2, 0)
 max_distance = 15.0
 unit_size = 1.0
 
 [node name="AmbientSoundComponent" type="Node" parent="AmbientSound"]
-script = ExtResource(8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e)
+script = ExtResource("3_ae")
 play_on_start = true
 loop = true
 random_pitch = true
 pitch_variation = 0.05
 
 [node name="DarkZone" type="Area3D" parent="."]
-position = [5, 0, 5]
+position = Vector3(5, 1.5, 5)
 
 [node name="DarkZoneShape" type="CollisionShape3D" parent="DarkZone"]
-shape = BoxShape3D.new()
-size = [4, 3, 4]
+shape = SubResource("BoxShape3D_dark")
 
 [node name="DarkZoneComponent" type="Node" parent="DarkZone"]
-script = ExtResource(b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f)
+script = ExtResource("6_tz")
 trigger_on_enter = true
 required_tag = "Player"
 repeatable = true
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="Crosshair" type="TextureRect" parent="HUD"]
+texture = ExtResource("8_ch")
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -16.0
+offset_top = -16.0
+offset_right = 16.0
+offset_bottom = 16.0
+script = ExtResource("9_crosshair")
+crosshair_texture = ExtResource("8_ch")
+
+[node name="SanityBar" type="ProgressBar" parent="HUD"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -150.0
+offset_top = -60.0
+offset_right = 150.0
+offset_bottom = -40.0
+script = ExtResource("10_sanitybar")
+low_sanity_color = Color(1, 0.2, 0.2, 1)
+normal_color = Color(0.8, 0.8, 0.8, 1)
+
+[node name="SanityLabel" type="Label" parent="HUD"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -150.0
+offset_top = -80.0
+offset_right = 150.0
+offset_bottom = -60.0
+text = "Sanidade"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+
+[node name="ControlsLabel" type="Label" parent="HUD"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 0.0
+offset_left = 15.0
+offset_top = 10.0
+offset_right = -15.0
+offset_bottom = 40.0
+text = "WASD mover | Shift correr | Space pular | F lanterna | E interagir"
+theme_override_colors/font_color = Color(0.75, 0.75, 0.75, 1)

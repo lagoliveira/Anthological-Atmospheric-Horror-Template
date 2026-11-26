@@ -1,48 +1,62 @@
-[gd_scene load_steps=4 format=3 uid="cb27e3d7f8a4c912b5d6e1f7a8b3c4d0"]
+[gd_scene load_steps=6 format=3]
 
-[ext_resource type="Script" path="res://src/components/player/FPController.gd" id="1a2b3c4d5e6f7a8b"]
-[ext_resource type="Script" path="res://src/components/player/Flashlight.gd" id="2b3c4d5e6f7a8b9c"]
-[ext_resource type="Script" path="res://src/components/player/SanityComponent.gd" id="3c4d5e6f7a8b9c0d"]
+[ext_resource type="Script" path="res://src/components/player/FPController.gd" id="1_fp"]
+[ext_resource type="Script" path="res://src/components/player/Flashlight.gd" id="2_fl"]
+[ext_resource type="Script" path="res://src/components/player/SanityComponent.gd" id="3_sa"]
+[ext_resource type="Script" path="res://src/components/player/InteractionManager.gd" id="4_im"]
 
-[node name="Player" type="CharacterBody3D"]
-script = ExtResource(1a2b3c4d5e6f7a8b)
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
+radius = 0.4
+height = 1.8
+
+[node name="Player" type="CharacterBody3D" groups=["Player"]]
+script = ExtResource("1_fp")
 mouse_sensitivity = 0.002
 walk_speed = 4.5
 run_speed = 7.0
 jump_velocity = 5.0
+sprint_action = "sprint"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+position = Vector3(0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_body")
 
 [node name="CameraPivot" type="Node3D" parent="."]
-position = [0, 1.6, 0]
+position = Vector3(0, 1.6, 0)
 
 [node name="Camera" type="Camera3D" parent="CameraPivot"]
-position = [0, 0, 0]
-rotation = [0, 0, 0]
+current = true
 fov = 75.0
 near = 0.1
 far = 1000.0
-make_current = true
 
 [node name="Flashlight" type="SpotLight3D" parent="CameraPivot"]
-position = [0, 0.05, 0]
-enabled = false
-color = [1, 0.96, 0.9]
-energy = 2.5
-range = 14.0
+position = Vector3(0, 0.05, 0)
+visible = false
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 2.5
+spot_range = 14.0
 cone_angle = 45.0
-shadows_enabled = true
+shadow_enabled = true
 
 [node name="FlashlightComponent" type="Node" parent="."]
-script = ExtResource(2b3c4d5e6f7a8b9c)
+script = ExtResource("2_fl")
 light_node = NodePath("CameraPivot/Flashlight")
+toggle_action = "flashlight"
 battery_capacity = 100.0
 battery_drain_rate = 15.0
 battery_recharge_rate = 8.0
 low_battery_threshold = 20.0
 
 [node name="SanityComponent" type="Node" parent="."]
-script = ExtResource(3c4d5e6f7a8b9c0d)
+script = ExtResource("3_sa")
 max_sanity = 100.0
 drain_rate_dark = 5.0
 drain_rate_monster = 20.0
 gain_rate_safe = 3.0
 low_sanity_threshold = 30.0
+
+[node name="InteractionManager" type="Node" parent="."]
+script = ExtResource("4_im")
+interact_action = "interact"
+ray_length = 3.0

@@ -2,15 +2,17 @@ extends CharacterBody3D
 class_name FPController
 
 # First-person player controller component.
-# Handles movement, look (mouse), and footstep audio.
-# Composed with Flashlight and SanityComponent for full player behavior.
+# Handles movement, look (mouse), jumping, sprinting and footstep events.
+# Composed with Flashlight, SanityComponent and InteractionManager for
+# the full player behaviour.
 
 @export var mouse_sensitivity: float = 0.002
 @export var walk_speed: float = 4.5
 @export var run_speed: float = 7.0
 @export var jump_velocity: float = 5.0
 @export var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
-@export var sprint_key: String = "Shift"
+@export var sprint_action: String = "sprint"
+@export var footstep_distance: float = 2.2
 
 var move_velocity: Vector3 = Vector3.ZERO
 var camera_pivot: Node3D
@@ -24,6 +26,7 @@ signal player_landed()
 signal footstep_played()
 
 var was_on_floor: bool = false
+var footstep_accumulator: float = 0.0
 
 func _ready() -> void:
 	camera_pivot = get_node_or_null("%CameraPivot")
@@ -31,7 +34,7 @@ func _ready() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	was_on_floor = is_on_floor()
 
-func _input(event: InputEvent) -> void:
+func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
 		yaw -= event.relative.x * mouse_sensitivity
 		pitch -= event.relative.y * mouse_sensitivity
@@ -45,40 +48,49 @@ func _input(event: InputEvent) -> void:
 			camera.rotation.x = pitch
 
 func _physics_process(delta: float) -> void:
-	var is_on_floor: bool = is_on_floor()
+	var on_floor: bool = is_on_floor()
 
-	# Landing detection
-	if was_on_floor == false and is_on_floor:
+	if not was_on_floor and on_floor:
 		player_landed.emit()
-	was_on_floor = is_on_floor
+	was_on_floor = on_floor
 
 	var input_dir: Vector2 = Input.get_vector("move_left", "move_right", "move_forward", "move_back")
-	var direction: Vector3 = (camera_pivot.global_transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
+	var direction: Vector3 = _get_move_direction(input_dir)
 
-	var target_speed: float = walk_speed
-	var is_sprinting: bool = Input.is_action_pressed(sprint_key)
-	if is_sprinting:
-		target_speed = run_speed
+	var is_sprinting: bool = Input.is_action_pressed(sprint_action) and input_dir.length() > 0.1
+	var target_speed: float = run_speed if is_sprinting else walk_speed
 
-	if is_on_floor:
-		move_velocity = direction * target_speed
-		# Footstep timer could go here
-		if direction.length() > 0.1 and Input.is_action_just_pressed("move_forward"):
-			footstep_played.emit()
+	if on_floor:
+		move_velocity.x = direction.x * target_speed
+		move_velocity.z = direction.z * target_speed
 	else:
 		move_velocity.y -= gravity * delta
 
-	if Input.is_action_just_pressed("jump") and is_on_floor:
+	if Input.is_action_just_pressed("jump") and on_floor:
 		move_velocity.y = jump_velocity
 		player_jumped.emit()
 
 	velocity = move_velocity
 	move_and_slide()
 
-	if is_sprinting and direction.length() > 0.1:
-		player_sprinted.emit(true)
-	else:
-		player_sprinted.emit(false)
+	_update_footsteps(delta, direction.length() > 0.1, is_sprinting)
+	player_sprinted.emit(is_sprinting)
+
+func _get_move_direction(input_dir: Vector2) -> Vector3:
+	var basis: Basis = Basis.IDENTITY
+	if camera_pivot:
+		basis = camera_pivot.global_transform.basis
+	elif camera:
+		basis = camera.global_transform.basis
+	return (basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
+
+func _update_footsteps(delta: float, is_moving: bool, is_sprinting: bool) -> void:
+	if not is_moving or not is_on_floor():
+		return
+	footstep_accumulator += delta * (run_speed if is_sprinting else walk_speed)
+	if footstep_accumulator >= footstep_distance:
+		footstep_accumulator = 0.0
+		footstep_played.emit()
 
 func get_camera() -> Camera3D:
 	return camera

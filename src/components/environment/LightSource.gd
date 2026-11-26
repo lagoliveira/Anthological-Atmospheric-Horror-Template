@@ -18,14 +18,14 @@ var original_energy: float = 1.0
 func _ready() -> void:
 	is_on = is_on_by_default
 	if light_node:
-		original_energy = light_node.energy
-		light_node.enabled = is_on
+		original_energy = light_node.light_energy
+		light_node.visible = is_on
 
 func _process(delta: float) -> void:
 	if flicker and is_on and light_node:
 		flicker_timer += delta
 		if flicker_timer >= 0.05:
-			light_node.energy = original_energy * (1.0 + (randf() - 0.5) * flicker_intensity)
+			light_node.light_energy = original_energy * (1.0 + (randf() - 0.5) * flicker_intensity)
 			flicker_timer = 0.0
 
 func toggle() -> void:
@@ -33,17 +33,17 @@ func toggle() -> void:
 		return
 	is_on = !is_on
 	if light_node:
-		light_node.enabled = is_on
+		light_node.visible = is_on
 
 func turn_on() -> void:
 	is_on = true
 	if light_node:
-		light_node.enabled = true
+		light_node.visible = true
 
 func turn_off() -> void:
 	is_on = false
 	if light_node:
-		light_node.enabled = false
+		light_node.visible = false
 
 func is_lit() -> bool:
 	return is_on

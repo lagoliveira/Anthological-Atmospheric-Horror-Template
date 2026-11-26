@@ -1,60 +1,90 @@
 # Anthological Atmospheric Horror — Template Godot
 
-Template modular baseado em componentes para jogos de **terror atmosférico antológico** em **3D primeira pessoa**, desenvolvido na **Godot 4.x**.
+Template modular baseado em componentes para jogos de **terror atmosférico antológico** em **3D primeira pessoa**, desenvolvido na **Godot 4.x** (Forward Plus + Jolt Physics).
 
-## Estrutura do Projeto
+## ▶️ Executar
+
+Abra o projeto no Godot 4.7 e pressione **F5**. A cena principal já está configurada como `scenes/TestScene.tscn`.
+
+### Controles
+
+| Tecla | Ação |
+|-------|------|
+| `W` `A` `S` `D` | Mover |
+| `Shift` | Correr |
+| `Space` | Pular |
+| `F` | Lanterna |
+| `E` | Interagir |
+
+> O mapa de ações já está definido em `project.godot` (`move_forward`, `move_back`, `move_left`, `move_right`, `jump`, `sprint`, `flashlight`, `interact`).
+
+## 📁 Estrutura do Projeto
 
 ```
 res://
-├── autoloads/            # Singletons globais (GameManager, etc.)
-├── scenes/               # Cenas base (Player, MainMenu)
+├── assets/icons/         # Ícones da UI (crosshair)
+├── autoloads/            # GameManager (único autoload)
+├── scenes/               # Player, MainMenu, TestScene
 ├── src/
 │   ├── components/
-│   │   ├── base/         # Classe base Component
-│   │   ├── player/       # FPController, Flashlight, SanityComponent
+│   │   ├── base/         # Component.gd (classe base)
+│   │   ├── player/       # FPController, Flashlight, SanityComponent, InteractionManager
 │   │   ├── interaction/  # Interactable, Door, Note
 │   │   ├── environment/  # LightSource, AudioEmitter, TriggerZone
 │   │   └── inventory/    # InventoryItem, InventoryManager
 │   ├── managers/         # SaveSystem, AudioManager, FadeManager, NotesManager
-│   └── ui/               # Crosshair, SanityBar
+│   └── ui/               # Crosshair, SanityBar, MainMenu
 └── project.godot
 ```
 
-## Arquitetura Baseada em Componentes
+## 🧩 Arquitetura Baseada em Componentes
 
-Cada responsabilidade é um **componente** (um `Node` com `class_name`) que pode ser anexado a qualquer entidade. A comunicação entre componentes ocorre via **sinais**, evitando hierarquias de herança profundas.
+Cada responsabilidade é um **componente** (um `Node` com `class_name`) que pode ser anexado a qualquer entidade. A comunicação ocorre via **sinais**, evitando hierarquias de herança profundas.
 
 ### Componentes principais
 
 | Componente | Responsabilidade |
 |------------|------------------|
-| `FPController` | Movimento e câmera em primeira pessoa |
-| `Flashlight` | Lanterna com bateria, consumo e flicker |
-| `SanityComponent` | Sanidade do jogador; afeta áudio e UI |
-| `Interactable` | Base para objetos interagíveis |
-| `Door` | Porta trancável/abrir-fechar |
-| `Note` | Nota colecionável (lore) |
-| `LightSource` | Luz ambienteToggleável |
-| `AudioEmitter` | Áudio posicional 3D |
+| `Component` | Classe base: ciclo de vida e referência à entidade |
+| `FPController` | Movimento, câmera, pulo, sprint e passos |
+| `Flashlight` | Lanterna com bateria, consumo, recarga e flicker |
+| `SanityComponent` | Sanidade do jogador; drena na escuridão/perigo |
+| `InteractionManager` | Raycast de interação e prompt do objeto focado |
+| `Interactable` | Base para objetos interagíveis (`Area3D`) |
+| `Door` | Porta trancável, abrir/fechar com tween |
+| `Note` | Nota colecionável de lore |
+| `LightSource` | Luz ambiente toggleável com flicker |
+| `AudioEmitter` | Áudio posicional 3D em loop |
 | `TriggerZone` | Zona de gatilho para eventos |
-| `InventoryItem` | Dado de item de inventário |
-| `InventoryManager` | Gerenciador de inventário |
+| `InventoryItem` / `InventoryManager` | Dados e inventário do jogador |
 | `SaveSystem` | Salvar/carregar partida |
-| `AudioManager` | Gerenciador global de áudio |
+| `AudioManager` | Áudio global e camadas ambientais |
 | `FadeManager` | Fade de tela para trocas de capítulo |
 | `NotesManager` | Controle de notas coletadas |
+| `Crosshair` / `SanityBar` | HUD que reage à sanidade |
 
-## Configuração no Godot
+### Managers e o GameManager
 
-1. Abra o projeto no Godot 4.x.
-2. Vá em **Projeto > Configurações do Projeto > Autoloads** e adicione `GameManager.gd` como `GameManager`.
-3. Configure as Ações de Input no **Mapa de Input**:
-   - `move_forward`, `move_back`, `move_left`, `move_right`
-   - `jump`
-   - `Flashlight`
-4. Defina `scenes/MainMenu.tscn` como cena principal (ou `scenes/Player.tscn` para teste direto).
+Existe **um único autoload**: `GameManager`. Ele cria e possui os demais gerenciadores (`SaveSystem`, `AudioManager`, `FadeManager`, `NotesManager`, `InventoryManager`) como filhos, e expõe acessores:
 
-## Uso em Novos Projetos (Antologia)
+```gdscript
+var game_manager: GameManager = get_node("/root/GameManager")
+game_manager.get_inventory_manager().has_item("chave_rustica")
+game_manager.get_audio_manager().play_sound(stream)
+game_manager.get_notes_manager().add_note("nota_01", "Diário", "...")
+```
+
+## 🧪 Cena de Testes
+
+`scenes/TestScene.tscn` reúne todos os componentes em um ambiente fechado:
+
+- **Jogador** em 1ª pessoa com lanterna, sanidade e interação
+- **Porta** interativa e **nota** colecionável
+- **Lâmpada** com flicker e **som ambiente** em loop
+- **Zona escura** que drena a sanidade do jogador
+- **HUD** com crosshair e barra de sanidade
+
+## 🎮 Reuso em Novos Projetos (Antologia)
 
 Cada capítulo de um jogo antológico pode ser uma cena separada. Use o `FadeManager` e o `GameManager.switch_chapter()` para transitar entre capítulos:
 
@@ -63,16 +93,17 @@ var game_manager: GameManager = get_node("/root/GameManager")
 game_manager.switch_chapter("Capítulo 2", "res://scenes/chapter2.tscn")
 ```
 
-## Git e GitHub
+Como a arquitetura é modular, você pode adicionar ou remover componentes conforme a necessidade de cada capítulo.
 
-Este projeto está versionado com Git. Para vincular ao seu repositório GitHub:
+## 🔧 Git
+
+Repositório Git local na branch `main`. Para espelhar no GitHub:
 
 ```bash
-git remote add origin https://github.com/SEU_USUARIO/SEU_REPOSITORIO.git
-git branch -M main
+git remote add origin https://github.com/lagoliveira/Anthological-Atmospheric-Horror-Template.git
 git push -u origin main
 ```
 
-## Licença
+## 📄 Licença
 
 Template livre para uso em projetos de terror atmosférico antológico.

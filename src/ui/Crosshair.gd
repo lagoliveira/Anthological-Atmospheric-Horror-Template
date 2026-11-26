@@ -11,7 +11,8 @@ class_name Crosshair
 var wobble_timer: float = 0.0
 
 func _ready() -> void:
-	texture = crosshair_texture
+	if crosshair_texture:
+		texture = crosshair_texture
 	anchor_left = 0.5
 	anchor_right = 0.5
 	anchor_top = 0.5
@@ -25,7 +26,7 @@ func _process(delta: float) -> void:
 	var game_manager: GameManager = get_node_or_null("/root/GameManager")
 	if not game_manager:
 		return
-	var sanity_component: SanityComponent = get_node_or_null("%SanityComponent") as SanityComponent
+	var sanity_component: SanityComponent = game_manager.get_sanity_component()
 	if not sanity_component:
 		return
 

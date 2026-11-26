@@ -1,0 +1,30 @@
+extends Node3D
+
+# Test scene controller.
+# Wires the template components together so they can be validated end to end:
+# the dark zone drains player sanity, the lamp feeds the flashlight state and
+# the HUD reacts to the sanity component.
+
+@onready var dark_zone: TriggerZone = get_node_or_null("DarkZone/DarkZoneComponent")
+@onready var lamp: LightSource = get_node_or_null("LampLight/LampComponent")
+@onready var game_manager: GameManager = get_node_or_null("/root/GameManager")
+
+func _ready() -> void:
+	if dark_zone:
+		dark_zone.zone_entered.connect(_on_zone_entered)
+		dark_zone.zone_exited.connect(_on_zone_exited)
+
+func _get_sanity() -> SanityComponent:
+	if game_manager:
+		return game_manager.get_sanity_component()
+	return null
+
+func _on_zone_entered(_body: Node) -> void:
+	var sanity: SanityComponent = _get_sanity()
+	if sanity:
+		sanity.set_darkness(true)
+
+func _on_zone_exited(_body: Node) -> void:
+	var sanity: SanityComponent = _get_sanity()
+	if sanity:
+		sanity.set_darkness(false)

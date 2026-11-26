@@ -11,7 +11,7 @@ class_name Flashlight
 @export var battery_recharge_rate: float = 8.0  # per second when off
 @export var low_battery_threshold: float = 20.0
 @export var flicker_at_low_battery: bool = true
-@export var toggle_key: String = "Flashlight"
+@export var toggle_action: String = "flashlight"
 
 var battery: float = 100.0
 var is_on: bool = false
@@ -26,11 +26,10 @@ signal battery_depleted()
 func _ready() -> void:
 	battery = battery_capacity
 	if light_node:
-		light_node.enabled = is_on
-		_update_light()
+		light_node.visible = is_on
 
 func _process(delta: float) -> void:
-	if Input.is_action_just_pressed(toggle_key):
+	if Input.is_action_just_pressed(toggle_action):
 		toggle()
 
 	if is_on:
@@ -38,7 +37,8 @@ func _process(delta: float) -> void:
 		if battery <= 0:
 			battery = 0
 			is_on = false
-			_update_light()
+			if light_node:
+				light_node.visible = false
 			battery_depleted.emit()
 		elif flicker_at_low_battery and battery <= low_battery_threshold:
 			_start_flicker()
@@ -57,12 +57,9 @@ func toggle() -> void:
 	if battery <= 0:
 		return
 	is_on = !is_on
-	_update_light()
-	flashlight_toggled.emit(is_on)
-
-func _update_light() -> void:
 	if light_node:
-		light_node.enabled = is_on
+		light_node.visible = is_on
+	flashlight_toggled.emit(is_on)
 
 func _start_flicker() -> void:
 	is_flickering = true
@@ -73,11 +70,11 @@ func _update_flicker(delta: float) -> void:
 		return
 	flicker_timer += delta
 	if flicker_timer >= 0.05:
-		light_node.enabled = not light_node.enabled if randf() < 0.3 else light_node.enabled
+		light_node.visible = not light_node.visible if randf() < 0.3 else light_node.visible
 		flicker_timer = 0.0
 	if battery > low_battery_threshold:
 		is_flickering = false
-		light_node.enabled = is_on
+		light_node.visible = is_on
 
 func get_battery_percentage() -> float:
 	return battery / battery_capacity * 100.0
