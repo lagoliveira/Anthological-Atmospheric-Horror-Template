@@ -1,0 +1,123 @@
+[gd_scene load_steps=9 format=3 uid="d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6"]
+
+[ext_resource type="PackedScene" path="res://scenes/Player.tscn" uid="1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d"]
+[ext_resource type="Script" path="res://src/components/environment/LightSource.gd" uid="7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d"]
+[ext_resource type="Script" path="res://src/components/environment/AudioEmitter.gd" uid="8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e"]
+[ext_resource type="Script" path="res://src/components/interaction/Door.gd" uid="9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f"]
+[ext_resource type="Script" path="res://src/components/interaction/Note.gd" uid="a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e"]
+[ext_resource type="Script" path="res://src/components/environment/TriggerZone.gd" uid="b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f"]
+
+[node name="TestEnvironment" type="Node3D"]
+
+[node name="Player" type="Node3D" parent="."]
+instance = ExtResource(1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d)
+position = [0, 1.6, 0]
+
+[node name="Floor" type="MeshInstance3D" parent="."]
+mesh = BoxMesh.new()
+size = [20, 0.5, 20]
+position = [0, 0.25, 0]
+material = ShaderMaterial.new()
+
+[node name="WallBack" type="MeshInstance3D" parent="."]
+mesh = BoxMesh.new()
+size = [20, 5, 0.5]
+position = [0, 2.5, -10]
+material = ShaderMaterial.new()
+
+[node name="WallLeft" type="MeshInstance3D" parent="."]
+mesh = BoxMesh.new()
+size = [0.5, 5, 20]
+position = [-10, 2.5, 0]
+material = ShaderMaterial.new()
+
+[node name="WallRight" type="MeshInstance3D" parent="."]
+mesh = BoxMesh.new()
+size = [0.5, 5, 20]
+position = [10, 2.5, 0]
+material = ShaderMaterial.new()
+
+[node name="Ceiling" type="MeshInstance3D" parent="."]
+mesh = BoxMesh.new()
+size = [20, 0.5, 20]
+position = [0, 5.25, 0]
+material = ShaderMaterial.new()
+
+[node name="AmbientLight" type="DirectionalLight3D" parent="."]
+energy = 0.3
+color = [0.4, 0.4, 0.5]
+rotation = [deg_to_rad(45), deg_to_rad(-45), 0]
+
+[node name="LampLight" type="PointLight3D" parent="."]
+position = [-5, 3, -5]
+energy = 2.0
+color = [1, 0.9, 0.8]
+range = 8.0
+
+[node name="LampComponent" type="Node" parent="LampLight"]
+script = ExtResource(7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d)
+light_node = NodePath("..")
+is_on_by_default = true
+can_be_toggled = true
+flicker = true
+flicker_intensity = 0.3
+affects_sanity = true
+
+[node name="TestDoor" type="Node3D" parent="."]
+position = [0, 0, -8]
+rotation = [0, 0, 0]
+
+[node name="DoorMesh" type="MeshInstance3D" parent="TestDoor"]
+mesh = BoxMesh.new()
+size = [1.2, 2.2, 0.1]
+position = [0, 1.1, 0.05]
+material = ShaderMaterial.new()
+
+[node name="DoorComponent" type="Node" parent="TestDoor"]
+script = ExtResource(9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f)
+door_node = NodePath("..")
+interaction_prompt = "Abrir porta"
+open_angle = 1.5708
+open_speed = 3.0
+is_locked = false
+
+[node name="TestNote" type="Node3D" parent="."]
+position = [3, 0.3, -4]
+
+[node name="NoteMesh" type="MeshInstance3D" parent="TestNote"]
+mesh = BoxMesh.new()
+size = [0.2, 0.3, 0.01]
+position = [0, 0, 0]
+material = ShaderMaterial.new()
+
+[node name="NoteComponent" type="Node" parent="TestNote"]
+script = ExtResource(a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e)
+note_id = "intro_note_01"
+note_title = "Bem-vindo"
+note_text = "Este é um template de terror atmosférico antológico. Explore o ambiente e teste os componentes."
+interaction_prompt = "Ler nota"
+
+[node name="AmbientSound" type="AudioStreamPlayer3D" parent="."]
+position = [0, 2, 0]
+max_distance = 15.0
+unit_size = 1.0
+
+[node name="AmbientSoundComponent" type="Node" parent="AmbientSound"]
+script = ExtResource(8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e)
+play_on_start = true
+loop = true
+random_pitch = true
+pitch_variation = 0.05
+
+[node name="DarkZone" type="Area3D" parent="."]
+position = [5, 0, 5]
+
+[node name="DarkZoneShape" type="CollisionShape3D" parent="DarkZone"]
+shape = BoxShape3D.new()
+size = [4, 3, 4]
+
+[node name="DarkZoneComponent" type="Node" parent="DarkZone"]
+script = ExtResource(b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f)
+trigger_on_enter = true
+required_tag = "Player"
+repeatable = true
