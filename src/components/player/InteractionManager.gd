@@ -18,9 +18,10 @@ signal target_changed(target: Interactable)
 signal interaction_performed(target: Interactable)
 
 @onready var camera: Camera3D = null
+@onready var player: Node3D = null
 
 func _ready() -> void:
-	var player: Node3D = get_parent() as Node3D
+	player = get_parent() as Node3D
 	if player:
 		camera = player.get_node_or_null("%Camera") as Camera3D
 		GameManager.set_player(player)
@@ -32,14 +33,16 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not event.is_action_pressed(interact_action):
 		return
 	if current_target and current_target.is_available():
-		current_target.interact(get_parent())
+		current_target.interact(player if player else get_parent())
 		interaction_performed.emit(current_target)
 
 func _update_target() -> void:
 	var found: Interactable = null
 
 	if camera:
-		var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
+		# This component is a plain Node, so the 3D world must come from the
+		# camera (a Node3D) rather than from `self`.
+		var space: PhysicsDirectSpaceState3D = camera.get_world_3d().direct_space_state
 		var origin: Vector3 = camera.global_position
 		var target: Vector3 = origin + (-camera.global_transform.basis.z) * ray_length
 		var query: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(origin, target, collision_mask)
