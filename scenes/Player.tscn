@@ -22,9 +22,11 @@ position = Vector3(0, 0.9, 0)
 shape = SubResource("CapsuleShape3D_body")
 
 [node name="CameraPivot" type="Node3D" parent="."]
-position = Vector3(0, 1.6, 0)
+unique_name_in_owner = true
+position = Vector3(0, 1.65, 0)
 
 [node name="Camera" type="Camera3D" parent="CameraPivot"]
+unique_name_in_owner = true
 current = true
 fov = 75.0
 near = 0.1
@@ -39,9 +41,9 @@ spot_range = 14.0
 cone_angle = 45.0
 shadow_enabled = true
 
-[node name="FlashlightComponent" type="Node" parent="."]
+[node name="FlashlightComponent" type="Node3D" parent="." node_paths=PackedStringArray("light_node")]
 script = ExtResource("2_fl")
-light_node = NodePath("CameraPivot/Flashlight")
+light_node = NodePath("../CameraPivot/Flashlight")
 toggle_action = "flashlight"
 battery_capacity = 100.0
 battery_drain_rate = 15.0

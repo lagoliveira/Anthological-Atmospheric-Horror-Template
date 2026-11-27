@@ -11,14 +11,31 @@ class_name AudioEmitter
 @export var start_delay: float = 0.0
 
 func _ready() -> void:
-	stream_paused = false
-	autoplay = play_on_start
-	if stream and "loop" in stream:
-		stream.loop = loop
+	_apply_loop()
 
-	if play_on_start and start_delay > 0:
+	if not play_on_start:
+		return
+
+	if start_delay > 0.0:
 		await get_tree().create_timer(start_delay).timeout
-		play()
+		# The node may have left the tree while waiting for the delay.
+		if not is_inside_tree():
+			return
+
+	play_one_shot()
+
+# Looping is a property of the stream, not of the player, and every stream
+# type exposes it differently.
+func _apply_loop() -> void:
+	if stream == null:
+		return
+	if stream is AudioStreamWAV:
+		var wav: AudioStreamWAV = stream as AudioStreamWAV
+		wav.loop_mode = AudioStreamWAV.LOOP_FORWARD if loop else AudioStreamWAV.LOOP_DISABLED
+	elif stream is AudioStreamOggVorbis:
+		(stream as AudioStreamOggVorbis).loop = loop
+	elif stream is AudioStreamMP3:
+		(stream as AudioStreamMP3).loop = loop
 
 func play_one_shot() -> void:
 	if random_pitch:

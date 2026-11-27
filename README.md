@@ -24,6 +24,7 @@ Abra o projeto no Godot 4.7 e pressione **F5**. A cena principal já está confi
 res://
 ├── assets/icons/         # Ícones da UI (crosshair)
 ├── autoloads/            # GameManager (único autoload)
+├── docs/                 # Relatório de bugs e arquitetura
 ├── scenes/               # Player, MainMenu, TestScene
 ├── src/
 │   ├── components/
@@ -34,6 +35,7 @@ res://
 │   │   └── inventory/    # InventoryItem, InventoryManager
 │   ├── managers/         # SaveSystem, AudioManager, FadeManager, NotesManager
 │   └── ui/               # Crosshair, SanityBar, MainMenu
+├── tests/                # Suíte funcional de autoverificação
 └── project.godot
 ```
 
@@ -95,6 +97,43 @@ GameManager.switch_chapter("Capítulo 2", "res://scenes/chapter2.tscn")
 ```
 
 Como a arquitetura é modular, você pode adicionar ou remover componentes conforme a necessidade de cada capítulo.
+
+## 🧪 Testes
+
+O template traz uma suíte de autoverificação com **77 verificações** que exercitam os componentes e as integrações entre eles:
+
+```bash
+godot --headless --path . res://tests/functional_test.tscn
+```
+
+O processo sai com código `0` quando tudo passa e `1` quando há falhas.
+No editor, abra `tests/functional_test.tscn` e pressione **F6**.
+Detalhes em [`tests/README.md`](tests/README.md).
+
+## ⚠️ Armadilhas da Godot 4 (ao estender o template)
+
+**Referências de nó em cenas**: para que um `NodePath` exportado seja
+convertido em `Node` pelo loader, o nó **precisa** declarar o atributo
+`node_paths`. Sem isso o valor fica silenciosamente `null`:
+
+```gdscript
+[node name="FlashlightComponent" type="Node3D" parent="." node_paths=PackedStringArray("light_node")]
+script = ExtResource("2_fl")
+light_node = NodePath("../CameraPivot/Flashlight")
+```
+
+**Busca por `%Nome`**: o lookup por unique name é escopado ao `owner` da
+cena e falha quando a cena é instanciada dentro de outra. Para componentes
+críticos (câmera, luz), prefira resolver **por tipo**:
+
+```gdscript
+var found: Array[Node] = entity.find_children("*", "Camera3D", true, false)
+```
+
+**Propriedades renomeadas na Godot 4**: `rotation_quaternion` → `quaternion`,
+`get_owner_or_null` → `get_parent`, `PointLight3D` → `OmniLight3D`,
+`energy` → `light_energy`, `enabled` → `visible`, `range` → `spot_range` /
+`omni_range`, `shadows_enabled` → `shadow_enabled`.
 
 ## 📄 Licença
 

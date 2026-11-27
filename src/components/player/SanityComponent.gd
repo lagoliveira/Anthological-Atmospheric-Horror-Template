@@ -1,4 +1,4 @@
-extends Node
+extends Component
 class_name SanityComponent
 
 # Sanity / mental health component for atmospheric horror.
@@ -16,16 +16,26 @@ var is_in_darkness: bool = false
 var is_near_threat: bool = false
 var is_in_safe_zone: bool = false
 
+var _was_low: bool = false
+var _was_critical: bool = false
+var _was_recovered: bool = false
+
 signal sanity_changed(current: float, max: float)
 signal low_sanity_reached()
 signal sanity_critical()
 signal sanity_recovered()
 
 func _ready() -> void:
+	super()
 	sanity = max_sanity
 	sanity_changed.emit(sanity, max_sanity)
+	# Self-register with the global manager so the UI can find this component
+	# regardless of the node name or scene layout.
+	var game_manager: Node = get_node_or_null("/root/GameManager")
+	if game_manager:
+		game_manager.set_sanity_component(self)
 
-func _process(delta: float) -> void:
+func _component_process(delta: float) -> void:
 	var delta_sanity: float = 0.0
 
 	if is_near_threat:
@@ -35,15 +45,26 @@ func _process(delta: float) -> void:
 	elif is_in_safe_zone:
 		delta_sanity += gain_rate_safe * delta
 
-	sanity = clamp(sanity + delta_sanity, 0, max_sanity)
+	sanity = clamp(sanity + delta_sanity, 0.0, max_sanity)
 	sanity_changed.emit(sanity, max_sanity)
 
-	if sanity <= low_sanity_threshold and sanity > 0:
-		low_sanity_reached.emit()
-	elif sanity <= 10:
+	# Threshold signals are edge triggered so listeners are not flooded
+	# every frame while the value stays on one side of the threshold.
+	var is_critical: bool = sanity <= 10.0
+	var is_low: bool = sanity <= low_sanity_threshold
+	var is_recovered: bool = sanity >= max_sanity * 0.8 and delta_sanity > 0.0
+
+	if is_critical and not _was_critical:
 		sanity_critical.emit()
-	elif sanity >= max_sanity * 0.8 and delta_sanity > 0:
+	_was_critical = is_critical
+
+	if is_low and not _was_low:
+		low_sanity_reached.emit()
+	_was_low = is_low
+
+	if is_recovered and not _was_recovered:
 		sanity_recovered.emit()
+	_was_recovered = is_recovered
 
 func set_darkness(value: bool) -> void:
 	is_in_darkness = value

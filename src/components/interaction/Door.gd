@@ -19,8 +19,10 @@ var closed_rotation: Quaternion
 var open_rotation: Quaternion
 
 func _ready() -> void:
+	if door_node == null:
+		door_node = get_parent() as Node3D
 	if door_node:
-		closed_rotation = door_node.rotation_quaternion
+		closed_rotation = door_node.quaternion
 		open_rotation = closed_rotation * Quaternion(Vector3.UP, open_angle)
 	_update_prompt()
 
@@ -51,7 +53,7 @@ func _interact(interactor: Node) -> void:
 		target = closed_rotation
 
 	var tween: Tween = create_tween()
-	tween.tween_property(door_node, "rotation_quaternion", target, 1.0 / open_speed)
+	tween.tween_property(door_node, "quaternion", target, 1.0 / open_speed)
 	tween.tween_callback(func(): is_animating = false)
 
 	_play_sound(open_sound if is_open else close_sound)

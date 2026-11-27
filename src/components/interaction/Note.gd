@@ -29,5 +29,5 @@ func _interact(interactor: Node) -> void:
 
 	GameManager.restore_sanity(sanity_gain)
 
-	interacted.emit(interactor)
+	# The base class already emits `interacted` after _interact() returns.
 	queue_free()

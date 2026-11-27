@@ -48,12 +48,49 @@ func _ready() -> void:
 	inventory_manager.name = "InventoryManager"
 	add_child(inventory_manager)
 
+	# The player may not exist yet at autoload time, so discovery is retried
+	# every frame until one is found.
+	set_process(true)
+
+func _process(_delta: float) -> void:
+	if player == null:
+		_discover_player()
+
+func _discover_player() -> void:
+	# Fallback for players that do not use the InteractionManager component.
+	var candidates: Array[Node] = get_tree().get_nodes_in_group("Player")
+	for candidate in candidates:
+		var node_3d: Node3D = candidate as Node3D
+		if node_3d:
+			set_player(node_3d)
+			return
+
 func set_player(new_player: Node3D) -> void:
+	if new_player == null:
+		return
 	player = new_player
-	var found: SanityComponent = new_player.get_node_or_null("SanityComponent") as SanityComponent
+
+	# Look for the sanity component anywhere in the player subtree so the
+	# component does not depend on a specific node name.
+	var found: SanityComponent = _find_sanity_component(new_player)
 	if found:
 		sanity_component = found
-		player_registered.emit(new_player)
+
+	player_registered.emit(new_player)
+
+func _find_sanity_component(root: Node) -> SanityComponent:
+	if root == null:
+		return null
+	var direct: SanityComponent = root.get_node_or_null("SanityComponent") as SanityComponent
+	if direct:
+		return direct
+	var children: Array[Node] = root.find_children("*", "SanityComponent", true, false)
+	if children.is_empty():
+		return null
+	return children[0] as SanityComponent
+
+func set_sanity_component(component: SanityComponent) -> void:
+	sanity_component = component
 
 func get_sanity_component() -> SanityComponent:
 	return sanity_component
@@ -61,7 +98,7 @@ func get_sanity_component() -> SanityComponent:
 func restore_sanity(amount: float) -> void:
 	if sanity_component:
 		sanity_component.restore_sanity(amount)
-		sanity_restored.emit(amount)
+	sanity_restored.emit(amount)
 
 func switch_chapter(chapter_name: String, scene_path: String) -> void:
 	current_chapter = chapter_name

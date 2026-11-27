@@ -27,36 +27,43 @@ func _ready() -> void:
 		ambient_bus = AudioStreamPlayer.new()
 		ambient_bus.name = "AmbientBus"
 		add_child(ambient_bus)
-		ambient_bus.play()
 
+# `volume` is a linear gain (1.0 = full volume) and is converted to the
+# decibel scale expected by AudioStreamPlayer.
 func play_sound(stream: AudioStream, volume: float = 1.0, pitch: float = 1.0) -> void:
 	if not stream:
 		return
 	var player: AudioStreamPlayer = AudioStreamPlayer.new()
 	player.stream = stream
-	player.volume_db = volume
+	player.volume_db = _gain_to_db(volume)
 	player.pitch_scale = pitch
 	add_child(player)
-	player.play()
+	# The connection must exist before playing, otherwise a very short sound
+	# could finish before the cleanup is wired.
 	player.finished.connect(player.queue_free)
+	player.play()
 
 func play_sound_3d(stream: AudioStream, position: Vector3, volume: float = 1.0, pitch: float = 1.0) -> void:
 	if not stream:
 		return
 	var player: AudioStreamPlayer3D = AudioStreamPlayer3D.new()
 	player.stream = stream
-	player.global_position = position
-	player.volume_db = volume
+	player.volume_db = _gain_to_db(volume)
 	player.pitch_scale = pitch
 	add_child(player)
-	player.play()
 	player.finished.connect(player.queue_free)
+	# global_position can only be used once the node is inside the tree.
+	player.global_position = position
+	player.play()
 
 func set_ambient(stream: AudioStream, fade_seconds: float = 2.0) -> void:
 	current_ambient = stream
 	if ambient_bus:
 		ambient_bus.stream = stream
-		ambient_bus.play()
+		if stream:
+			ambient_bus.play()
+		else:
+			ambient_bus.stop()
 	ambient_changed.emit(stream)
 
 func set_sanity_multiplier(level: float) -> void:
@@ -71,3 +78,8 @@ func set_sanity_multiplier(level: float) -> void:
 func stop_ambient() -> void:
 	if ambient_bus:
 		ambient_bus.stop()
+
+func _gain_to_db(gain: float) -> float:
+	if gain <= 0.0:
+		return -80.0
+	return linear_to_db(clamp(gain, 0.0, 1.0))

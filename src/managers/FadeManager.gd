@@ -6,6 +6,8 @@ class_name FadeManager
 
 @export var fade_color: Color = Color(0, 0, 0, 1)
 @export var fade_duration: float = 1.0
+# The fade must be drawn above the gameplay HUD, which uses the default layer.
+@export var fade_layer: int = 100
 
 var fade_rect: ColorRect
 var is_fading: bool = false
@@ -14,6 +16,7 @@ signal fade_started()
 signal fade_finished()
 
 func _ready() -> void:
+	layer = fade_layer
 	fade_rect = ColorRect.new()
 	fade_rect.color = fade_color
 	fade_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -44,11 +47,21 @@ func _fade_to(target_alpha: float, duration: float) -> void:
 		fade_finished.emit()
 	)
 
+# A single tween drives the whole transition so the steps cannot overlap
+# and leave the screen stuck on a half-faded state.
 func change_scene_fade(scene_path: String, fade_duration: float = 1.0) -> void:
-	fade_out(fade_duration)
+	if is_fading:
+		return
+	is_fading = true
+	fade_started.emit()
+
 	var tween: Tween = create_tween()
-	tween.tween_interval(fade_duration)
+	tween.tween_property(fade_rect, "modulate:a", 1.0, fade_duration)
 	tween.tween_callback(func():
 		get_tree().change_scene_to_file(scene_path)
-		fade_in(fade_duration)
+	)
+	tween.tween_property(fade_rect, "modulate:a", 0.0, fade_duration)
+	tween.tween_callback(func():
+		is_fading = false
+		fade_finished.emit()
 	)

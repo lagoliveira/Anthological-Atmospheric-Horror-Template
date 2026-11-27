@@ -25,8 +25,20 @@ signal battery_depleted()
 
 func _ready() -> void:
 	battery = battery_capacity
+	if light_node == null:
+		light_node = _find_light()
 	if light_node:
 		light_node.visible = is_on
+
+func _find_light() -> SpotLight3D:
+	# Fallback: locate the first SpotLight3D under the owning entity.
+	var owner_node: Node = get_parent()
+	if owner_node == null:
+		return null
+	var found: Array[Node] = owner_node.find_children("*", "SpotLight3D", true, false)
+	if found.is_empty():
+		return null
+	return found[0] as SpotLight3D
 
 func _process(delta: float) -> void:
 	if Input.is_action_just_pressed(toggle_action):
@@ -37,6 +49,9 @@ func _process(delta: float) -> void:
 		if battery <= 0:
 			battery = 0
 			is_on = false
+			# Stop the flicker loop, otherwise it could switch the light back
+			# on visually while the component reports it as disabled.
+			is_flickering = false
 			if light_node:
 				light_node.visible = false
 			battery_depleted.emit()

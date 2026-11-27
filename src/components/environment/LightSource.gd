@@ -15,7 +15,11 @@ var is_on: bool = true
 var flicker_timer: float = 0.0
 var original_energy: float = 1.0
 
+signal light_toggled(is_on: bool)
+
 func _ready() -> void:
+	if light_node == null:
+		light_node = get_parent() as Light3D
 	is_on = is_on_by_default
 	if light_node:
 		original_energy = light_node.light_energy
@@ -34,16 +38,21 @@ func toggle() -> void:
 	is_on = !is_on
 	if light_node:
 		light_node.visible = is_on
+	light_toggled.emit(is_on)
 
 func turn_on() -> void:
 	is_on = true
 	if light_node:
+		# Restore the original energy, which the flicker may have altered.
+		light_node.light_energy = original_energy
 		light_node.visible = true
+	light_toggled.emit(is_on)
 
 func turn_off() -> void:
 	is_on = false
 	if light_node:
 		light_node.visible = false
+	light_toggled.emit(is_on)
 
 func is_lit() -> bool:
 	return is_on
