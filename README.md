@@ -96,14 +96,6 @@ GameManager.switch_chapter("Capítulo 2", "res://scenes/chapter2.tscn")
 
 Como a arquitetura é modular, você pode adicionar ou remover componentes conforme a necessidade de cada capítulo.
 
-## 🔧 Git
-
-Repositório Git local na branch `main`. Para espelhar no GitHub:
-
-```bash
-git remote add origin https://github.com/lagoliveira/Anthological-Atmospheric-Horror-Template.git
-git push -u origin main
-```
 
 ## 📄 Licença
 
