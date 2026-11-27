@@ -96,7 +96,6 @@ GameManager.switch_chapter("Capítulo 2", "res://scenes/chapter2.tscn")
 
 Como a arquitetura é modular, você pode adicionar ou remover componentes conforme a necessidade de cada capítulo.
 
-
 ## 📄 Licença
 
 Template livre para uso em projetos de terror atmosférico antológico.
