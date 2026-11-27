@@ -6,8 +6,8 @@ class_name MainMenu
 
 @export var game_scene_path: String = "res://scenes/TestScene.tscn"
 
-@onready var start_button: Button = get_node_or_null("MenuContainer/StartButton")
-@onready var quit_button: Button = get_node_or_null("MenuContainer/QuitButton")
+@onready var start_button: Button = get_node_or_null("MenuContainer/StartButton") as Button
+@onready var quit_button: Button = get_node_or_null("MenuContainer/QuitButton") as Button
 
 func _ready() -> void:
 	if start_button:

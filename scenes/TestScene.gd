@@ -5,10 +5,10 @@ extends Node3D
 # the dark zone drains player sanity, the lamp feeds the flashlight state and
 # the HUD reacts to the sanity component.
 
-@onready var dark_zone: TriggerZone = get_node_or_null("DarkZone/DarkZoneComponent")
-@onready var lamp: LightSource = get_node_or_null("LampLight/LampComponent")
-@onready var player: Node3D = get_node_or_null("Player")
-@onready var prompt_label: Label = get_node_or_null("HUD/InteractionPrompt")
+@onready var dark_zone: TriggerZone = get_node_or_null("DarkZone/DarkZoneComponent") as TriggerZone
+@onready var lamp: LightSource = get_node_or_null("LampLight/LampComponent") as LightSource
+@onready var player: Node3D = get_node_or_null("Player") as Node3D
+@onready var prompt_label: Label = get_node_or_null("HUD/InteractionPrompt") as Label
 
 func _ready() -> void:
 	if dark_zone:
@@ -16,7 +16,7 @@ func _ready() -> void:
 		dark_zone.zone_exited.connect(_on_zone_exited)
 
 	if player:
-		var interaction_manager: InteractionManager = player.get_node_or_null("InteractionManager")
+		var interaction_manager: InteractionManager = player.get_node_or_null("InteractionManager") as InteractionManager
 		if interaction_manager:
 			interaction_manager.target_changed.connect(_on_target_changed)
 

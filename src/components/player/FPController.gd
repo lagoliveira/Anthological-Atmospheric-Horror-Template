@@ -29,8 +29,8 @@ var was_on_floor: bool = false
 var footstep_accumulator: float = 0.0
 
 func _ready() -> void:
-	camera_pivot = get_node_or_null("%CameraPivot")
-	camera = get_node_or_null("%Camera")
+	camera_pivot = get_node_or_null("%CameraPivot") as Node3D
+	camera = get_node_or_null("%Camera") as Camera3D
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	was_on_floor = is_on_floor()
 

@@ -33,7 +33,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not event.is_action_pressed(interact_action):
 		return
 	if current_target and current_target.is_available():
-		current_target.interact(player if player else get_parent())
+		var interactor: Node = player if player else get_parent()
+		current_target.interact(interactor)
 		interaction_performed.emit(current_target)
 
 func _update_target() -> void:
