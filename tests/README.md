@@ -30,6 +30,7 @@ passam e com codigo `1` quando pelo menos uma falha.
 | Lanterna | liga/desliga, bateria, flicker, apagamento no esgotamento |
 | Audio / Fade | tolerancia a nulos, camada do fade acima da HUD |
 | Movimento | direcao planar mesmo com a camera inclinada |
+| Joypad | acoes `look_*` no InputMap, rotacao pelo analogico direito, deadzone |
 
 ## Adicionando verificacoes
 

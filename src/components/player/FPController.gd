@@ -7,6 +7,10 @@ class_name FPController
 # the full player behaviour.
 
 @export var mouse_sensitivity: float = 0.002
+@export var joypad_look_enabled: bool = true
+@export var joypad_look_speed: float = 2.5
+@export var joypad_look_deadzone: float = 0.2
+@export var joypad_look_expo: float = 0.0
 @export var walk_speed: float = 4.5
 @export var run_speed: float = 7.0
 @export var jump_velocity: float = 5.0
@@ -47,18 +51,47 @@ func _find_camera() -> Camera3D:
 		return anywhere[0] as Camera3D
 	return null
 
+func _process(delta: float) -> void:
+	_apply_joypad_look(delta)
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
-		yaw -= event.relative.x * mouse_sensitivity
-		pitch -= event.relative.y * mouse_sensitivity
-		pitch = clamp(pitch, -deg_to_rad(90), deg_to_rad(90))
+		var motion: InputEventMouseMotion = event as InputEventMouseMotion
+		_apply_look(-motion.relative.x * mouse_sensitivity, -motion.relative.y * mouse_sensitivity)
 
-		if camera_pivot:
-			camera_pivot.rotation.y = yaw
-			camera_pivot.rotation.x = pitch
-		elif camera:
-			camera.rotation.y = yaw
-			camera.rotation.x = pitch
+# The right stick is read from the input map every frame, so the deadzone and
+# the response curve are applied consistently and any device bound to those
+# actions works without touching the controller code.
+func _apply_joypad_look(delta: float) -> void:
+	if not joypad_look_enabled:
+		return
+	var look: Vector2 = Input.get_vector("look_left", "look_right", "look_up", "look_down", joypad_look_deadzone)
+	if look == Vector2.ZERO:
+		return
+	_apply_look(
+		-_apply_look_curve(look.x) * joypad_look_speed * delta,
+		-_apply_look_curve(look.y) * joypad_look_speed * delta
+	)
+
+# A higher exponent slows the camera down around the centre of the stick,
+# which helps aiming at small interactables.
+func _apply_look_curve(value: float) -> float:
+	if joypad_look_expo <= 0.0:
+		return value
+	var magnitude: float = absf(value)
+	return signf(value) * pow(magnitude, 1.0 + joypad_look_expo)
+
+# Shared by the mouse and the joypad so both use the same sign conventions.
+func _apply_look(yaw_delta: float, pitch_delta: float) -> void:
+	yaw += yaw_delta
+	pitch = clamp(pitch + pitch_delta, -deg_to_rad(90), deg_to_rad(90))
+
+	if camera_pivot:
+		camera_pivot.rotation.y = yaw
+		camera_pivot.rotation.x = pitch
+	elif camera:
+		camera.rotation.y = yaw
+		camera.rotation.x = pitch
 
 func _physics_process(delta: float) -> void:
 	var on_floor: bool = is_on_floor()

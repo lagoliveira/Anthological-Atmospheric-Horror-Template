@@ -263,6 +263,52 @@ func _run() -> void:
 	check(absf(dir.y) < 0.0001, "Direcao de movimento planar (sem componente vertical)")
 	fp.camera_pivot.rotation.x = 0.0
 
+	# --- Rotacao da camera com o analogico direito ---
+	check(InputMap.has_action("look_left"), "Acao look_left existe no InputMap")
+	check(InputMap.has_action("look_right"), "Acao look_right existe no InputMap")
+	check(InputMap.has_action("look_up"), "Acao look_up existe no InputMap")
+	check(InputMap.has_action("look_down"), "Acao look_down existe no InputMap")
+
+	var right_axis: InputEventJoypadMotion = InputEventJoypadMotion.new()
+	right_axis.device = 0
+	right_axis.axis = JOY_AXIS_RIGHT_X
+	right_axis.axis_value = 1.0
+	Input.parse_input_event(right_axis)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	check(fp.yaw < 0.0, "Analogico direito para a direita gira a camera para a direita")
+	check(is_equal_approx(fp.camera_pivot.rotation.y, fp.yaw), "Rotacao do analogico aplicada no CameraPivot")
+
+	right_axis.axis_value = 0.0
+	Input.parse_input_event(right_axis)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var yaw_rest: float = fp.yaw
+
+	# Deadzone: uma deflexao pequena nao deve girar a camera.
+	right_axis.axis_value = 0.1
+	Input.parse_input_event(right_axis)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	check(is_equal_approx(fp.yaw, yaw_rest), "Deadzone do analogico ignora deflexoes pequenas")
+	right_axis.axis_value = 0.0
+	Input.parse_input_event(right_axis)
+	await get_tree().process_frame
+	await get_tree().process_frame
+
+	var up_axis: InputEventJoypadMotion = InputEventJoypadMotion.new()
+	up_axis.device = 0
+	up_axis.axis = JOY_AXIS_RIGHT_Y
+	up_axis.axis_value = -1.0
+	Input.parse_input_event(up_axis)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	check(fp.pitch > 0.0, "Analogico direito para cima olha para cima")
+	up_axis.axis_value = 0.0
+	Input.parse_input_event(up_axis)
+	await get_tree().process_frame
+	await get_tree().process_frame
+
 	# --- Registro do jogador ---
 	var registered: Array[bool] = [false]
 	gm.player_registered.connect(func(_p: Node3D) -> void: registered[0] = true)

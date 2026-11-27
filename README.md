@@ -16,7 +16,27 @@ Abra o projeto no Godot 4.7 e pressione **F5**. A cena principal já está confi
 | `F` | Lanterna |
 | `E` | Interagir |
 
-> O mapa de ações já está definido em `project.godot` (`move_forward`, `move_back`, `move_left`, `move_right`, `jump`, `sprint`, `flashlight`, `interact`).
+### Controle (Joypad)
+
+| Controle | Ação |
+|----------|------|
+| Analógico esquerdo | Mover |
+| Analógico direito | Rotacionar a câmera |
+| `A` / `✕` | Pular |
+| `Y` / `△` | Lanterna |
+| `X` / `□` | Interagir |
+| Clique no analógico direito | Correr |
+
+> O mapa de ações já está definido em `project.godot` (`move_forward`, `move_back`, `move_left`, `move_right`, `jump`, `sprint`, `flashlight`, `interact`, `look_left`, `look_right`, `look_up`, `look_down`).
+>
+> A rotação da câmera pelo analógico direito é lida **pelo InputMap** a cada frame, então qualquer dispositivo mapeado nas ações `look_*` funciona sem alterar código. Ajuste fino em `FPController`:
+>
+> | Propriedade | Padrão | Efeito |
+> |-------------|--------|--------|
+> | `joypad_look_enabled` | `true` | Liga/desliga a rotação pelo analógico |
+> | `joypad_look_speed` | `2.5` | Velocidade angular máxima (rad/s) |
+> | `joypad_look_deadzone` | `0.2` | Zona morta da deflexão |
+> | `joypad_look_expo` | `0.0` | Curva de resposta (`0` = linear, `1` = precisão perto do centro) |
 
 ## 📁 Estrutura do Projeto
 
