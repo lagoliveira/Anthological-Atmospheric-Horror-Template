@@ -16,11 +16,7 @@ func _ready() -> void:
 		quit_button.pressed.connect(_on_quit_pressed)
 
 func _on_start_pressed() -> void:
-	var game_manager: GameManager = get_node_or_null("/root/GameManager")
-	if game_manager:
-		game_manager.get_fade_manager().change_scene_fade(game_scene_path, 1.0)
-	else:
-		get_tree().change_scene_to_file(game_scene_path)
+	GameManager.get_fade_manager().change_scene_fade(game_scene_path, 1.0)
 
 func _on_quit_pressed() -> void:
 	get_tree().quit()

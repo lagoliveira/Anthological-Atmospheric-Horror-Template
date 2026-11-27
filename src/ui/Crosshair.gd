@@ -23,10 +23,7 @@ func _ready() -> void:
 	offset_bottom = size.y / 2
 
 func _process(delta: float) -> void:
-	var game_manager: GameManager = get_node_or_null("/root/GameManager")
-	if not game_manager:
-		return
-	var sanity_component: SanityComponent = game_manager.get_sanity_component()
+	var sanity_component: SanityComponent = GameManager.get_sanity_component()
 	if not sanity_component:
 		return
 

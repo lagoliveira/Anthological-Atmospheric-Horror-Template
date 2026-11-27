@@ -23,9 +23,7 @@ func _ready() -> void:
 	var player: Node3D = get_parent() as Node3D
 	if player:
 		camera = player.get_node_or_null("%Camera") as Camera3D
-		var game_manager: GameManager = get_node_or_null("/root/GameManager")
-		if game_manager:
-			game_manager.set_player(player)
+		GameManager.set_player(player)
 
 func _physics_process(_delta: float) -> void:
 	_update_target()

@@ -7,7 +7,6 @@ extends Node3D
 
 @onready var dark_zone: TriggerZone = get_node_or_null("DarkZone/DarkZoneComponent")
 @onready var lamp: LightSource = get_node_or_null("LampLight/LampComponent")
-@onready var game_manager: GameManager = get_node_or_null("/root/GameManager")
 
 func _ready() -> void:
 	if dark_zone:
@@ -15,9 +14,7 @@ func _ready() -> void:
 		dark_zone.zone_exited.connect(_on_zone_exited)
 
 func _get_sanity() -> SanityComponent:
-	if game_manager:
-		return game_manager.get_sanity_component()
-	return null
+	return GameManager.get_sanity_component()
 
 func _on_zone_entered(_body: Node) -> void:
 	var sanity: SanityComponent = _get_sanity()

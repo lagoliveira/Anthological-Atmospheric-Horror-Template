@@ -1,11 +1,15 @@
 extends Node
-class_name GameManager
 
 # Central autoload that owns every global manager and exposes
 # high-level game state for the anthology template.
 #
 # The managers are created in code as children of this node so that
 # there is a single autoload entry to configure in Project Settings.
+#
+# NOTE: this script intentionally has no `class_name`. An autoload singleton
+# already occupies the global identifier "GameManager", and declaring a class
+# with the same name raises "Class hides an autoload singleton".
+# Access it from other scripts directly as the global `GameManager`.
 
 var save_system: SaveSystem
 var audio_manager: AudioManager
@@ -21,6 +25,7 @@ var sanity_component: SanityComponent
 signal chapter_changed(new_chapter: String)
 signal game_paused(is_paused: bool)
 signal sanity_restored(amount: float)
+signal player_registered(player: Node3D)
 
 func _ready() -> void:
 	save_system = SaveSystem.new()
@@ -48,6 +53,7 @@ func set_player(new_player: Node3D) -> void:
 	var found: SanityComponent = new_player.get_node_or_null("SanityComponent") as SanityComponent
 	if found:
 		sanity_component = found
+		player_registered.emit(new_player)
 
 func get_sanity_component() -> SanityComponent:
 	return sanity_component

@@ -22,14 +22,12 @@ func _interact(interactor: Node) -> void:
 	is_read = true
 	is_interactable = false
 
-	var game_manager: GameManager = get_node_or_null("/root/GameManager")
-	if game_manager:
-		game_manager.get_notes_manager().add_note(note_id, note_title, note_text, note_texture)
+	GameManager.get_notes_manager().add_note(note_id, note_title, note_text, note_texture)
 
-		if audio_on_read:
-			game_manager.get_audio_manager().play_sound(audio_on_read)
+	if audio_on_read:
+		GameManager.get_audio_manager().play_sound(audio_on_read)
 
-		game_manager.restore_sanity(sanity_gain)
+	GameManager.restore_sanity(sanity_gain)
 
 	interacted.emit(interactor)
 	queue_free()

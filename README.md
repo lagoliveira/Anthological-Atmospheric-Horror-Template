@@ -68,11 +68,13 @@ Cada responsabilidade é um **componente** (um `Node` com `class_name`) que pode
 Existe **um único autoload**: `GameManager`. Ele cria e possui os demais gerenciadores (`SaveSystem`, `AudioManager`, `FadeManager`, `NotesManager`, `InventoryManager`) como filhos, e expõe acessores:
 
 ```gdscript
-var game_manager: GameManager = get_node("/root/GameManager")
-game_manager.get_inventory_manager().has_item("chave_rustica")
-game_manager.get_audio_manager().play_sound(stream)
-game_manager.get_notes_manager().add_note("nota_01", "Diário", "...")
+GameManager.get_inventory_manager().has_item("chave_rustica")
+GameManager.get_audio_manager().play_sound(stream)
+GameManager.get_notes_manager().add_note("nota_01", "Diário", "...")
+GameManager.switch_chapter("Capítulo 2", "res://scenes/chapter2.tscn")
 ```
+
+> **Nota:** o script `autoloads/GameManager.gd` **não** declara `class_name`. Um autoload já ocupa o identificador global `GameManager`, e declarar uma classe com o mesmo nome gera o erro *"Class hides an autoload singleton"*. Acesse o singleton diretamente pelo nome global, sem anotação de tipo.
 
 ## 🧪 Cena de Testes
 
@@ -89,8 +91,7 @@ game_manager.get_notes_manager().add_note("nota_01", "Diário", "...")
 Cada capítulo de um jogo antológico pode ser uma cena separada. Use o `FadeManager` e o `GameManager.switch_chapter()` para transitar entre capítulos:
 
 ```gdscript
-var game_manager: GameManager = get_node("/root/GameManager")
-game_manager.switch_chapter("Capítulo 2", "res://scenes/chapter2.tscn")
+GameManager.switch_chapter("Capítulo 2", "res://scenes/chapter2.tscn")
 ```
 
 Como a arquitetura é modular, você pode adicionar ou remover componentes conforme a necessidade de cada capítulo.

@@ -57,10 +57,7 @@ func _interact(interactor: Node) -> void:
 	_play_sound(open_sound if is_open else close_sound)
 
 func _try_unlock() -> bool:
-	var game_manager: GameManager = get_node_or_null("/root/GameManager")
-	if game_manager == null:
-		return false
-	if not game_manager.get_inventory_manager().has_item(required_key_id):
+	if not GameManager.get_inventory_manager().has_item(required_key_id):
 		_play_sound(locked_sound)
 		return false
 	is_locked = false
@@ -70,9 +67,7 @@ func _try_unlock() -> bool:
 func _play_sound(stream: AudioStream) -> void:
 	if stream == null:
 		return
-	var game_manager: GameManager = get_node_or_null("/root/GameManager")
-	if game_manager:
-		game_manager.get_audio_manager().play_sound(stream)
+	GameManager.get_audio_manager().play_sound(stream)
 
 func lock() -> void:
 	is_locked = true
